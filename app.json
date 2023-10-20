@@ -1,19 +1,17 @@
 {
   "expo": {
-    "name": "petngonative",
+    "name": "Angel Alpha Animals",
     "slug": "petngonative",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/afa_logo_white.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -25,6 +23,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dabd1675-c683-415f-b40c-a1a3e2d1caf6"
+      }
+    },
+    "owner": "yuvs003"
   }
 }
