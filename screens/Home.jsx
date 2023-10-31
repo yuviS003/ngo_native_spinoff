@@ -7,7 +7,7 @@ import {
   View,
   ScrollView,
 } from "react-native";
-import { Appbar, IconButton, Menu } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import PopUpModal from "../components/PopUpModal";
 import Swiper from "react-native-swiper";
 
@@ -79,7 +79,7 @@ const Home = ({ navigation }) => {
                   style={styles.iconStyle}
                   onPress={() => {
                     console.log("Pressed");
-                    navigation.navigate("Camera");
+                    navigation.navigate("viewDogStrl");
                   }}
                 />
                 <Text style={styles.iconText}>View{"\n"}Cases</Text>
@@ -145,7 +145,9 @@ const Home = ({ navigation }) => {
 
       <PopUpModal
         visible={modalVisible}
+        setVisible={setModalVisible}
         onClose={() => setModalVisible(false)}
+        navigation={navigation}
       />
     </SafeAreaView>
   );

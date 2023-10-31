@@ -1,10 +1,21 @@
 import { Appbar } from "react-native-paper";
 import React from "react";
 import { StyleSheet } from "react-native";
+import { bluePrHEX } from "../constants";
+import { useNavigation } from "@react-navigation/native";
 
-const AppBar = ({ navigation }) => {
+const AppBar = ({ showBackButton }) => {
+  const navigation = useNavigation();
   return (
     <Appbar.Header style={styles.appBar} elevated={10}>
+      {showBackButton && (
+        <Appbar.BackAction
+          color="white"
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
+      )}
       <Appbar.Content title="Welcome, Trapper 👋" color="white" />
       <Appbar.Action
         icon="account-circle"
@@ -22,7 +33,7 @@ export default AppBar;
 
 const styles = StyleSheet.create({
   appBar: {
-    backgroundColor: "#1976D2",
+    backgroundColor: bluePrHEX,
     width: "100%",
   },
 });

@@ -9,10 +9,10 @@ import {
   Image,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import dogImg from "../assets/dogImg.png";
-import catImg from "../assets/catImg.png";
+import dogImg from "../../assets/dogImg.png";
+import catImg from "../../assets/catImg.png";
 
-const PopUpModal = ({ visible, setVisible, onClose, navigation }) => {
+const SuccessStrlCasesMsg = ({ visible, setVisible, onClose, navigation }) => {
   const [fadeAnim] = useState(new Animated.Value(0));
 
   // Function to handle modal visibility and fade-in animation
@@ -88,7 +88,7 @@ const PopUpModal = ({ visible, setVisible, onClose, navigation }) => {
   );
 };
 
-export default PopUpModal;
+export default SuccessStrlCasesMsg;
 
 const styles = StyleSheet.create({
   modalBackground: {

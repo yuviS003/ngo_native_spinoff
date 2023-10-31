@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { TextInput, Button, Snackbar } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -75,6 +75,16 @@ const Login = ({ navigation }) => {
         });
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (await AsyncStorage.getItem("ngoUserInfo")) {
+        navigation.navigate("Home");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <View style={styles.container}>
