@@ -58,7 +58,10 @@ const PopUpModal = ({ visible, setVisible, onClose, navigation }) => {
           ]}
         >
           <View style={styles.headerContainer}>
-            <TouchableOpacity onPress={() => handleModalVisibility(false)}>
+            <TouchableOpacity
+              onPress={() => handleModalVisibility(false)}
+              activeOpacity={0.6}
+            >
               <Icon name="arrow-left" size={20} />
             </TouchableOpacity>
             <Text style={styles.headerText}>Choose animal type</Text>
@@ -69,13 +72,14 @@ const PopUpModal = ({ visible, setVisible, onClose, navigation }) => {
                 navigation.navigate("createDogStrl");
                 setVisible(false);
               }}
+              activeOpacity={0.6}
             >
               <Image
                 source={dogImg}
                 style={{ height: 200, width: 160, objectFit: "scale-down" }}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.6}>
               <Image
                 source={catImg}
                 style={{ height: 200, width: 150, objectFit: "scale-down" }}

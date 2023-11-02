@@ -5,8 +5,10 @@ import * as MediaLibrary from "expo-media-library";
 import { useAppContext } from "../context/AppContext";
 import { TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 
-export default function CameraScreen({ navigation }) {
+export default function CameraScreen() {
+  const navigation = useNavigation();
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
@@ -52,7 +54,7 @@ export default function CameraScreen({ navigation }) {
       console.log(photo);
       // You can update the photo variable in your context like this
       dispatch({ type: "UPDATE_PHOTO", payload: photo.base64 });
-      navigation.navigate("createDogStrl");
+      navigation.goBack();
     };
 
     return (

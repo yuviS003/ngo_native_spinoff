@@ -8,6 +8,8 @@ import CameraScreen from "./screens/Camera";
 import { AppContextProvider } from "./context/AppContext";
 import DogStepper from "./screens/Sterilization/create/DogStepper";
 import DogView from "./screens/Sterilization/view/DogView";
+import DogStrlStatusChange from "./screens/Sterilization/modify_status/DogStrlStatusChange";
+import FlashMessage from "react-native-flash-message";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +49,13 @@ export default function App() {
             })}
           />
           <Stack.Screen
+            name="changeStatusDogStrl"
+            component={DogStrlStatusChange}
+            options={({ route }) => ({
+              header: () => <AppBar showBackButton={true} />,
+            })}
+          />
+          <Stack.Screen
             name="Camera"
             component={CameraScreen}
             options={{
@@ -55,6 +64,7 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
+      <FlashMessage position="top" />
     </AppContextProvider>
   );
 }

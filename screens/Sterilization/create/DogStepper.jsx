@@ -1,15 +1,20 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView } from "react-native";
-import { TouchableOpacity } from "react-native";
 import DogStrlForm from "../../../components/FormBoxes/DogStrlForm";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppContext } from "../../../context/AppContext";
-import { Button } from "react-native-paper";
+import { Button, Dialog, MD2Colors } from "react-native-paper";
 import { bluePrHEX } from "../../../constants";
-import { getCurrentDate } from "../../../utils";
-// import SuccessStrlCasesMsg from "../../../components/PopUps/SuccessStrlCasesMsg";
+import {
+  getAreaNameById,
+  getColorNameById,
+  getCurrentDate,
+  getNgoNameById,
+  getStatusNameById,
+} from "../../../utils";
+import { showMessage } from "react-native-flash-message";
 
 const API_BASE_URL = "https://covalenttechnology.co.in/test";
 
@@ -17,31 +22,29 @@ const steps = [1, 2, 3, 4];
 
 const DogStepper = ({ navigation }) => {
   const [loader, setLoader] = useState(false);
-  const { state, dispatch } = useAppContext(); // Access the context and state
+  const { state, dispatch } = useAppContext();
   const [formData, setFormData] = useState({
     categoryName: "dog",
     gender: "",
-    AreaId: "",
-    NgoId: "",
     ReleaseImg: "",
     OtherImg: "",
     TrapLocation: null,
     ReleaseLocation: "",
     FileDate: "",
+    AreaId: "",
+    NgoId: "",
     Color: "",
     Comment: "",
     Landmark: "",
     StatusId: "",
     LoginId: "",
     TrapDate: "",
-    TrapImg: "data:image/png;base64",
+    TrapImg: "",
     ReleaseDate: "",
   });
   const [currentStep, setCurrentStep] = useState(1);
-  const [statusList, setStatusList] = useState([]);
-  const [ngoList, setNgoList] = useState([]);
-  const [areaList, setAreaList] = useState([]);
-  const [colorList, setColorList] = useState([]);
+  const [succDiagVisible, setSuccDiagVisible] = useState(false);
+  const [newFileNumber, setNewFileNumber] = useState("");
 
   const nextStep = () => {
     if (currentStep + 1 <= Math.max(...steps)) setCurrentStep(currentStep + 1);
@@ -51,19 +54,92 @@ const DogStepper = ({ navigation }) => {
     if (currentStep - 1 >= Math.min(...steps)) setCurrentStep(currentStep - 1);
   };
 
+  const resetForm = () => {
+    setFormData({
+      categoryName: "dog",
+      gender: "",
+      ReleaseImg: "",
+      OtherImg: "",
+      TrapLocation: null,
+      ReleaseLocation: "",
+      FileDate: "",
+      AreaId: "",
+      NgoId: "",
+      Color: "",
+      Comment: "",
+      Landmark: "",
+      StatusId: "",
+      LoginId: "",
+      TrapDate: "",
+      TrapImg: "",
+      ReleaseDate: "",
+    });
+    setLoader(false);
+    setSuccDiagVisible(false);
+    setNewFileNumber("");
+    setCurrentStep(1);
+    dispatch({ type: "UPDATE_PHOTO", payload: null });
+  };
+
   const handleSubmit = async () => {
+    if (!state.photo) {
+      showMessage({
+        message: "TRAP IMAGE NOT FOUND",
+        description: "Please capture a trap image to continue.",
+        type: "warning",
+      });
+      return;
+    }
+
+    if (!formData.TrapLocation) {
+      showMessage({
+        message: "LOCATION NOT FOUND",
+        description: "Unable to capture location. Please try again.",
+        type: "warning",
+      });
+      return;
+    }
+
+    if (
+      formData.AreaId === "" ||
+      formData.Color === "" ||
+      formData.NgoId === "" ||
+      formData.gender === "" ||
+      formData.Landmark === ""
+    ) {
+      showMessage({
+        message: "IMPORTANT FIELDS EMPTY",
+        description:
+          "Area, Landmark, Color, NGO and Gender are compulsory. Please check.",
+        type: "warning",
+      });
+      return;
+    }
+
     setLoader(true);
     const userInfo = await AsyncStorage.getItem("ngoUserInfo");
     let payload = formData;
     payload = {
       ...payload,
-      StatusId: statusList.filter((st) => st.StatusName === "trapped")[0].id,
+      StatusId: state.statusList.filter((st) => st.StatusName === "trapped")[0]
+        .id,
       LoginId: JSON.parse(userInfo).userId,
       TrapDate: getCurrentDate(),
       FileDate: getCurrentDate(),
       TrapImg: "data:image/png;base64" + state.photo,
     };
     setFormData(payload);
+    console.log("context data", state);
+    console.log(
+      "color name",
+      getColorNameById(state.colorList, formData.Color)
+    );
+    console.log("area name", getAreaNameById(state.areaList, formData.AreaId));
+    console.log("ngo name", getNgoNameById(state.ngoList, formData.NgoId));
+    console.log(
+      "status name",
+      getStatusNameById(state.statusList, formData.StatusId)
+    );
     console.log("submitted data--> ", payload);
     axios
       .post(`${API_BASE_URL}/transaction/create`, JSON.stringify(payload), {
@@ -74,7 +150,8 @@ const DogStepper = ({ navigation }) => {
       })
       .then((response) => {
         console.log("then", response.data);
-        setLoader(false);
+        setNewFileNumber(response.data.data.FileNo);
+        setSuccDiagVisible(true);
       })
       .catch((error) => {
         console.error("catch", error);
@@ -82,73 +159,6 @@ const DogStepper = ({ navigation }) => {
         // console.log(error.response);
       });
   };
-
-  useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/ngo`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("ngo then", response);
-        if (response.status === 200) setNgoList(response.data);
-      })
-      .catch((error) => {
-        console.error("ngo catch", error);
-      });
-    axios
-      .get(`${API_BASE_URL}/area`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("area then", response);
-        if (response.status === 200) setAreaList(response.data);
-      })
-      .catch((error) => {
-        console.error("area catch", error);
-      });
-    axios
-      .get(`${API_BASE_URL}/status`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("status then", response);
-        if (response.status === 200) setStatusList(response.data);
-      })
-      .catch((error) => {
-        console.error("status catch", error);
-      });
-    axios
-      .get(`${API_BASE_URL}/color`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("color then", response);
-        if (response.status === 200) setColorList(response.data);
-      })
-      .catch((error) => {
-        console.error("color catch", error);
-      });
-  }, []);
 
   return (
     <ScrollView>
@@ -192,26 +202,16 @@ const DogStepper = ({ navigation }) => {
         <DogStrlForm
           currentStep={currentStep}
           navigation={navigation}
-          statusList={statusList}
-          colorList={colorList}
-          ngoList={ngoList}
-          areaList={areaList}
           formData={formData}
           setFormData={setFormData}
         />
       </View>
       <View style={styles.stepControllers}>
-        {/* <TouchableOpacity
-          style={styles.stepContrBtn}
-          activeOpacity={0.6}
-          onPress={prevStep}
-        >
-          <Text style={styles.stepContrBtnText}>Previous</Text>
-        </TouchableOpacity> */}
         <Button
           style={styles.stepContrBtn}
           labelStyle={styles.stepContrBtnText}
           onPress={prevStep}
+          disabled={loader}
         >
           Previous
         </Button>
@@ -225,7 +225,53 @@ const DogStepper = ({ navigation }) => {
           {steps.slice(-1)[0] != currentStep ? "Next" : "Submit"}
         </Button>
       </View>
-      {/* <SuccessStrlCasesMsg /> */}
+      <Dialog
+        visible={succDiagVisible}
+        onDismiss={() => {
+          setSuccDiagVisible(false);
+        }}
+        style={{ backgroundColor: "white" }}
+      >
+        <Dialog.Title>Cases Created Successfully</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ fontSize: 18, fontWeight: "400", marginTop: 10 }}>
+            Hooray! A new case has been created
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: "600", marginTop: 10 }}>
+            New File No.: {newFileNumber}
+          </Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button
+            mode="contained"
+            style={{
+              backgroundColor: MD2Colors.green600,
+              borderRadius: 5,
+              paddingHorizontal: 10,
+            }}
+            labelStyle={{ fontSize: 16 }}
+            onPress={resetForm}
+          >
+            Create More
+          </Button>
+          <Button
+            mode="contained"
+            style={{
+              backgroundColor: MD2Colors.blue600,
+              borderRadius: 5,
+              paddingHorizontal: 10,
+            }}
+            labelStyle={{ fontSize: 16 }}
+            onPress={() => {
+              navigation.navigate("Home");
+              setSuccDiagVisible(false);
+              dispatch({ type: "UPDATE_PHOTO", payload: null });
+            }}
+          >
+            Back to Home
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
     </ScrollView>
   );
 };

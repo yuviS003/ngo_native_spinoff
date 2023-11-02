@@ -1,14 +1,18 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, List, MD2Colors } from "react-native-paper";
+import React, { useCallback, useState } from "react";
+import { Button, List, MD2Colors } from "react-native-paper";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loader from "../../../components/Loaders/Loader";
 import { ScrollView } from "react-native";
+import { bluePrHEX } from "../../../constants";
+import { useAppContext } from "../../../context/AppContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 const API_BASE_URL = "https://covalenttechnology.co.in/test";
 
-const DogView = () => {
+const DogView = ({ navigation }) => {
+  const { state, dispatch } = useAppContext();
   const [dogStrlCases, setDogStrlCases] = useState([]);
   const [loader, setLoader] = useState(false);
 
@@ -38,9 +42,11 @@ const DogView = () => {
       });
   };
 
-  useEffect(() => {
-    fetchDogStrlData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchDogStrlData();
+    }, [])
+  );
 
   return (
     <ScrollView>
@@ -141,6 +147,31 @@ const DogView = () => {
                     <Text style={styles.accBodySecText}>Comments: </Text>
                     <Text style={styles.accBodySecText}>{dCase.Comment}</Text>
                   </View>
+                  <Button
+                    mode="contained"
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 5,
+                      backgroundColor: bluePrHEX,
+                    }}
+                    labelStyle={{
+                      color: "white",
+                      fontSize: 20,
+                      fontWeight: "700",
+                      textTransform: "uppercase",
+                    }}
+                    onPress={() => {
+                      dispatch({
+                        type: "UPDATE_STRL_CASE",
+                        payload: dCase,
+                      });
+
+                      navigation.navigate("changeStatusDogStrl");
+                    }}
+                  >
+                    Change Status
+                  </Button>
                 </View>
               </List.Accordion>
             ))}

@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
-import { TextInput, Button, Snackbar } from "react-native-paper";
+import { TextInput, Button } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showMessage } from "react-native-flash-message";
 
 const API_BASE_URL = "https://covalenttechnology.co.in/test";
 
@@ -10,11 +11,6 @@ const Login = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [visible, setVisible] = React.useState(false);
-
-  const onToggleSnackBar = () => setVisible(!visible);
-
-  const onDismissSnackBar = () => setVisible(false);
 
   const authenticateUser = (userDetails) => {
     const TOKEN = userDetails.token;
@@ -45,11 +41,40 @@ const Login = ({ navigation }) => {
       .catch((error) => {
         console.log("catch--> ", error.message);
         console.log("catch--> ", error.response.data);
+        showMessage({
+          message: "ERROR",
+          description: error.response.data.message.toUpperCase(),
+          type: "danger",
+        });
         setIsLoading(false);
       });
   };
 
   const handleLogin = () => {
+    if (!userName.length) {
+      showMessage({
+        message: "USERNAME EMPTY",
+        description: "Please enter your username",
+        type: "danger",
+      });
+      return;
+    }
+    if (!password.length) {
+      showMessage({
+        message: "PASSWORD EMPTY",
+        description: "Please enter your password",
+        type: "danger",
+      });
+      return;
+    }
+    if (password.length < 6) {
+      showMessage({
+        message: "PASSWORD TOO SHORT",
+        description: "Password must contain at least 6 characters",
+        type: "info",
+      });
+      return;
+    }
     if (userName.length && password.length) {
       console.log(API_BASE_URL);
       console.log(userName, password);
@@ -65,20 +90,52 @@ const Login = ({ navigation }) => {
           },
         })
         .then((response) => {
-          console.log("then--> ", response.data.data);
+          console.log("/login then--> ", response);
+          console.log("/login then--> ", response.data.data);
           authenticateUser(response.data.data);
         })
         .catch((error) => {
-          console.log("catch--> ", error.message);
-          console.log("catch--> ", error.response.data);
+          console.error("/login catch--> ", error);
+          showMessage({
+            message: "ERROR",
+            description: error.response.data.message.toUpperCase(),
+            type: "danger",
+          });
+          console.error("/login catch--> ", error.response.data);
           setIsLoading(false);
         });
     }
   };
 
+  const showSuccessSnackbar = () => {
+    showMessage({
+      message: "Success",
+      description: "This is a success message.",
+      type: "success",
+    });
+  };
+
+  const showErrorSnackbar = () => {
+    showMessage({
+      message: "Error",
+      description: "This is an error message.",
+      type: "danger",
+    });
+  };
+
+  const showWarningSnackbar = () => {
+    showMessage({
+      message: "Warning",
+      description: "This is a warning message.",
+      type: "warning",
+    });
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-      if (await AsyncStorage.getItem("ngoUserInfo")) {
+      const userInfo = await AsyncStorage.getItem("ngoUserInfo");
+      console.log("user info", userInfo);
+      if (userInfo) {
         navigation.navigate("Home");
       }
     };
@@ -120,20 +177,7 @@ const Login = ({ navigation }) => {
       >
         <Text style={{ fontSize: 18 }}>Submit</Text>
       </Button>
-      <Snackbar
-        visible={visible}
-        onDismiss={onDismissSnackBar}
-        elevation={4}
-        style={{ backgroundColor: "green" }}
-        action={{
-          label: "X",
-          //   onPress: () => {
-          //     // Do something
-          //   },
-        }}
-      >
-        Hey there! I'm a Snackbar.
-      </Snackbar>
+      {/* <FlashMessage position="top" /> */}
     </View>
   );
 };

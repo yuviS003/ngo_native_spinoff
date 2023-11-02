@@ -1,3 +1,19 @@
+const getColorNameById = (colorList, colorId) => {
+  return colorList.filter((color) => color.id === colorId)[0]?.ColorName;
+};
+
+const getAreaNameById = (areaList, areaId) => {
+  return areaList.filter((area) => area.id === areaId)[0]?.AreaName;
+};
+
+const getNgoNameById = (ngoList, ngoId) => {
+  return ngoList.filter((ngo) => ngo.id === ngoId)[0]?.NgoName;
+};
+
+const getStatusNameById = (statusList, statusId) => {
+  return statusList.filter((status) => status.id === statusId)[0]?.StatusName;
+};
+
 const getCurrentDate = () => {
   const today = new Date();
 
@@ -12,4 +28,10 @@ const getCurrentDate = () => {
   return formattedDate;
 };
 
-export { getCurrentDate };
+export {
+  getCurrentDate,
+  getColorNameById,
+  getAreaNameById,
+  getNgoNameById,
+  getStatusNameById,
+};

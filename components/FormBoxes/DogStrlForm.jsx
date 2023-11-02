@@ -6,22 +6,21 @@ import { Button, RadioButton, TextInput } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import * as Location from "expo-location";
 import { bluePrHEX } from "../../constants";
+import { getAreaNameById, getColorNameById, getNgoNameById } from "../../utils";
+import { useEffect } from "react";
 
-const DogStrlForm = ({
-  currentStep,
-  navigation,
-  statusList,
-  colorList,
-  ngoList,
-  areaList,
-  formData,
-  setFormData,
-}) => {
+const DogStrlForm = ({ currentStep, navigation, formData, setFormData }) => {
   const [recordingGPS, setRecordingGPS] = useState(false);
   const { state, dispatch } = useAppContext(); // Access the context and state
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const [constants, setConstants] = useState({
+    areaName: "--",
+    colorName: "--",
+    ngoName: "--",
+  });
 
   const getLocationOnButtonPress = async () => {
     setRecordingGPS(true);
@@ -49,6 +48,14 @@ const DogStrlForm = ({
       setRecordingGPS(false);
     }
   };
+
+  useEffect(() => {
+    setConstants({
+      areaName: getAreaNameById(state.areaList, formData.AreaId),
+      colorName: getColorNameById(state.colorList, formData.Color),
+      ngoName: getNgoNameById(state.ngoList, formData.NgoId),
+    });
+  }, [formData.AreaId, formData.NgoId, formData.Color]);
 
   return (
     <View style={styles.container}>
@@ -150,7 +157,12 @@ const DogStrlForm = ({
                 });
               }}
             >
-              {colorList.map((color, i) => (
+              <Picker.Item
+                label="Tap to Choose"
+                value=""
+                style={{ fontSize: 18 }}
+              />
+              {state.colorList.map((color, i) => (
                 <Picker.Item
                   label={color.ColorName}
                   value={color.id}
@@ -173,7 +185,12 @@ const DogStrlForm = ({
               }}
               style={{}}
             >
-              {ngoList.map((ngo, i) => (
+              <Picker.Item
+                label="Tap to Choose"
+                value=""
+                style={{ fontSize: 18 }}
+              />
+              {state.ngoList.map((ngo, i) => (
                 <Picker.Item
                   label={ngo.NgoName}
                   value={ngo.id}
@@ -199,7 +216,12 @@ const DogStrlForm = ({
               }}
               style={{}}
             >
-              {areaList.map((area, i) => (
+              <Picker.Item
+                label="Tap to Choose"
+                value=""
+                style={{ fontSize: 18 }}
+              />
+              {state.areaList.map((area, i) => (
                 <Picker.Item
                   label={area.AreaName}
                   value={area.id}
@@ -256,41 +278,57 @@ const DogStrlForm = ({
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>Location:</Text>
-            <Text style={styles.revInp}>Recorded</Text>
+            {formData.TrapLocation ? (
+              <Text style={styles.revInp}>Recorded</Text>
+            ) : (
+              <Text style={styles.revInp}>Not Recorded</Text>
+            )}
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>Gender:</Text>
-            <Text style={styles.revInp}>{formData.gender}</Text>
+            {formData.gender.length ? (
+              <Text style={styles.revInp}>{formData.gender}</Text>
+            ) : (
+              <Text style={styles.revInp}>--</Text>
+            )}
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>Colors:</Text>
-            <Text style={styles.revInp}>{formData.ColorName}</Text>
+            {formData.Color.length ? (
+              <Text style={styles.revInp}>{constants.colorName}</Text>
+            ) : (
+              <Text style={styles.revInp}>--</Text>
+            )}
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>NGO:</Text>
-            <Text style={styles.revInp}>
-              {
-                ngoList.filter((area) => area.NgoId === formData.NgoId)[0]
-                  ?.NgoName
-              }
-            </Text>
+            {formData.NgoId.length ? (
+              <Text style={styles.revInp}>{constants.ngoName}</Text>
+            ) : (
+              <Text style={styles.revInp}>--</Text>
+            )}
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>Area:</Text>
-            <Text style={styles.revInp}>
-              {
-                areaList.filter((area) => area.AreaId === formData.AreaId)[0]
-                  ?.AreaName
-              }
-            </Text>
+            {formData.AreaId.length ? (
+              <Text style={styles.revInp}>{constants.areaName}</Text>
+            ) : (
+              <Text style={styles.revInp}>--</Text>
+            )}
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>Area Landmark:</Text>
-            <Text style={styles.revInp}>{formData.Landmark}</Text>
+            {formData.Landmark.length ? (
+              <Text style={styles.revInp}>{formData.Landmark}</Text>
+            ) : (
+              <Text style={styles.revInp}>--</Text>
+            )}
           </View>
           <View style={styles.revLabInpBox}>
             <Text style={styles.revLabel}>Comments:</Text>
-            <Text style={styles.revInp}>{formData.Comment}</Text>
+            <Text style={styles.revInp}>
+              {formData.Comment.length ? formData.Comment : "--"}
+            </Text>
           </View>
         </>
       )}
