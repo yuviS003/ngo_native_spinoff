@@ -4,112 +4,26 @@ import { IconButton } from "react-native-paper";
 import PopUpModal from "../components/PopUpModal";
 import Swiper from "react-native-swiper";
 import { useEffect } from "react";
-import axios from "axios";
 import { useAppContext } from "../context/AppContext";
 
-const API_BASE_URL = "https://covalenttechnology.co.in/test";
-
 const Home = ({ navigation }) => {
-  const { state, dispatch } = useAppContext();
+  const {
+    state,
+    fetchDogStrlData,
+    getAllStatusList,
+    getAllNgoList,
+    getAllAreaList,
+    getAllColorList,
+  } = useAppContext();
+
   const [modalVisible, setModalVisible] = useState(false);
-
-  const getAllStatusList = () => {
-    axios
-      .get(`${API_BASE_URL}/status`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("status then", response);
-        if (response.status === 200)
-          dispatch({
-            type: "UPDATE_STATUS",
-            payload: response.data,
-          });
-      })
-      .catch((error) => {
-        console.error("status catch", error);
-      });
-  };
-
-  const getAllNgoList = () => {
-    axios
-      .get(`${API_BASE_URL}/ngo`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("ngo then", response);
-        if (response.status === 200)
-          dispatch({
-            type: "UPDATE_NGO",
-            payload: response.data,
-          });
-      })
-      .catch((error) => {
-        console.error("ngo catch", error);
-      });
-  };
-
-  const getAllAreaList = () => {
-    axios
-      .get(`${API_BASE_URL}/area`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("area then", response);
-        if (response.status === 200)
-          dispatch({
-            type: "UPDATE_AREA",
-            payload: response.data,
-          });
-      })
-      .catch((error) => {
-        console.error("area catch", error);
-      });
-  };
-
-  const getAllColorList = () => {
-    axios
-      .get(`${API_BASE_URL}/color`, {
-        headers: {
-          // Authorization: `Bearer ${
-          //   JSON.parse(localStorage.getItem("AFA_test_user"))?.token
-          // }`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("color then", response);
-        if (response.status === 200)
-          dispatch({
-            type: "UPDATE_COLOR",
-            payload: response.data,
-          });
-      })
-      .catch((error) => {
-        console.error("color catch", error);
-      });
-  };
 
   useEffect(() => {
     getAllStatusList();
     getAllNgoList();
     getAllAreaList();
     getAllColorList();
+    fetchDogStrlData();
   }, []);
 
   return (
@@ -150,7 +64,9 @@ const Home = ({ navigation }) => {
           </View>
           <View style={styles.boxContainer}>
             <Text style={styles.boxHeading}>Sterilization</Text>
-            <Text style={styles.boxSubHeading}>Total lives saved: 8</Text>
+            <Text style={styles.boxSubHeading}>
+              Total lives saved: {state.dogStrlCases.length}
+            </Text>
             <View style={styles.navBox}>
               <View style={styles.navBtn}>
                 <IconButton
@@ -182,7 +98,7 @@ const Home = ({ navigation }) => {
                 />
                 <Text style={styles.iconText}>View{"\n"}Cases</Text>
               </View>
-              <View style={styles.navBtn}>
+              {/* <View style={styles.navBtn}>
                 <IconButton
                   icon="network-strength-off"
                   mode="contained"
@@ -193,10 +109,10 @@ const Home = ({ navigation }) => {
                   onPress={() => console.log("Pressed")}
                 />
                 <Text style={styles.iconText}>Offline{"\n"}Capture</Text>
-              </View>
+              </View> */}
             </View>
           </View>
-          <View style={styles.boxContainer}>
+          {/* <View style={styles.boxContainer}>
             <Text style={styles.boxHeading}>Medication</Text>
             <Text style={styles.boxSubHeading}>Total lives saved: 8</Text>
             <View style={styles.navBox}>
@@ -237,7 +153,7 @@ const Home = ({ navigation }) => {
                 <Text style={styles.iconText}>Diagnosis</Text>
               </View>
             </View>
-          </View>
+          </View> */}
         </View>
       </ScrollView>
 

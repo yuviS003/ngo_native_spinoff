@@ -32,6 +32,7 @@ const Login = ({ navigation }) => {
           email: response.data.auth.email,
           role: response.data.auth.role.split(","),
           token: TOKEN,
+          pw: password,
         };
         console.log("authObject--> ", JSON.stringify(authObject));
         await AsyncStorage.setItem("ngoUserInfo", JSON.stringify(authObject));
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
   btnStyle: {
     width: "80%",
     maxWidth: 400,
-    borderRadius: 18,
+    borderRadius: 10,
     backgroundColor: "#1976D2",
     marginTop: 15,
   },

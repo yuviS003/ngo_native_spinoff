@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 import { bluePrHEX } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 
-const AppBar = ({ showBackButton }) => {
+const AppBar = ({ showBackButton, appBarTitle }) => {
   const navigation = useNavigation();
   return (
     <Appbar.Header style={styles.appBar} elevated={10}>
@@ -16,7 +16,7 @@ const AppBar = ({ showBackButton }) => {
           }}
         />
       )}
-      <Appbar.Content title="Welcome, Trapper 👋" color="white" />
+      <Appbar.Content title={appBarTitle} color="white" />
       <Appbar.Action
         icon="account-circle"
         color="white"

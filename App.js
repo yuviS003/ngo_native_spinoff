@@ -31,28 +31,39 @@ export default function App() {
             name="Home"
             component={Home}
             options={({ route }) => ({
-              header: () => <AppBar showBackButton={false} />,
+              header: () => (
+                <AppBar
+                  appBarTitle="Welcome, Trapper 👋"
+                  showBackButton={false}
+                />
+              ),
             })}
           />
           <Stack.Screen
             name="createDogStrl"
             component={DogStepper}
             options={({ route }) => ({
-              header: () => <AppBar showBackButton={true} />,
+              header: () => (
+                <AppBar appBarTitle="New Dog Case" showBackButton={true} />
+              ),
             })}
           />
           <Stack.Screen
             name="viewDogStrl"
             component={DogView}
             options={({ route }) => ({
-              header: () => <AppBar showBackButton={true} />,
+              header: () => (
+                <AppBar appBarTitle="View Dog Cases" showBackButton={true} />
+              ),
             })}
           />
           <Stack.Screen
             name="changeStatusDogStrl"
             component={DogStrlStatusChange}
             options={({ route }) => ({
-              header: () => <AppBar showBackButton={true} />,
+              header: () => (
+                <AppBar appBarTitle="Modify Dog Cases" showBackButton={true} />
+              ),
             })}
           />
           <Stack.Screen

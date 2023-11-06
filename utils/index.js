@@ -28,10 +28,49 @@ const getCurrentDate = () => {
   return formattedDate;
 };
 
+const sortArrayByUpdatedAt = (array) => {
+  if (!array.length) return [];
+
+  // Use the sort method to compare updatedAt values and sort the array
+  return array.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+};
+
+const searchDogStrlCases = (array, query) => {
+  // Convert the query to lowercase for case-insensitive search
+  query = query.toLowerCase();
+
+  // Define the fields you want to search in
+  const searchableFields = [
+    "FILENO",
+    "Comment",
+    "Landmark",
+    "CaseNo",
+    "AreaName",
+    "gender",
+    "StatusName",
+    "ColorName",
+    "NgoName",
+  ];
+
+  // Filter the array to find matches
+  const matches = array.filter((item) => {
+    for (const field of searchableFields) {
+      if (item[field] && item[field].toLowerCase().includes(query)) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+  return matches;
+};
+
 export {
   getCurrentDate,
   getColorNameById,
   getAreaNameById,
   getNgoNameById,
   getStatusNameById,
+  sortArrayByUpdatedAt,
+  searchDogStrlCases,
 };

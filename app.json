@@ -4,7 +4,7 @@
     "slug": "petngonative",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/afa_logo_white.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -25,7 +25,7 @@
       "package": "com.yuvs003.petngonative"
     },
     "web": {
-      "favicon": "./assets/afa_logo_white.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {
