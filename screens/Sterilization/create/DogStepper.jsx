@@ -126,7 +126,7 @@ const DogStepper = ({ navigation }) => {
       LoginId: JSON.parse(userInfo).userId,
       TrapDate: getCurrentDate(),
       FileDate: getCurrentDate(),
-      TrapImg: "data:image/png;base64" + state.photo,
+      TrapImg: "data:image/png;base64," + state.photo,
     };
     setFormData(payload);
     console.log("context data", state);

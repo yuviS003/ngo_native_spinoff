@@ -36,6 +36,9 @@ const DogStrlStatusChange = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [remarks, setRemarks] = useState("");
   const [succDiagVisible, setSuccDiagVisible] = useState(false);
+  const [distanceErrDiag, setDistanceErrDiag] = useState(false);
+  const [distanceErrMsg, setDistanceErrMsg] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
 
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -56,6 +59,10 @@ const DogStrlStatusChange = () => {
   };
 
   const handleSubmit = async () => {
+    if (userInfo?.role.includes("ViewTrapper")) {
+      setNewStatus(statusList.filter((s) => s.StatusName === "released")[0].id);
+    }
+
     if (!state.photo) {
       console.log("photo not found");
       showMessage({
@@ -100,14 +107,13 @@ const DogStrlStatusChange = () => {
     };
 
     console.log("payload", payload);
-    const userInfo = await AsyncStorage.getItem("ngoUserInfo");
     console.log(userInfo);
     setLoading(true);
     axios
       .put(`${API_BASE_URL}/transaction/update/${currentCase.id}`, payload, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${JSON.parse(userInfo).token}`,
+          Authorization: `Bearer ${userInfo.token}`,
         },
       })
       .then((response) => {
@@ -117,14 +123,24 @@ const DogStrlStatusChange = () => {
       })
       .catch((error) => {
         console.error(error);
+        if (error.response.status === 409) {
+          console.log(error.response.data.message);
+          setDistanceErrMsg(error.response.data.message);
+          setDistanceErrDiag(true);
+        }
         setLoading(false);
       });
   };
 
   useEffect(() => {
-    console.log("context state ", currentCase);
-    dispatch({ type: "UPDATE_PHOTO", payload: null });
-    getLocation();
+    const handleUserInfo = async () => {
+      const temp = JSON.parse(await AsyncStorage.getItem("ngoUserInfo"));
+      setUserInfo(temp);
+      console.log("context state ", currentCase);
+      dispatch({ type: "UPDATE_PHOTO", payload: null });
+      getLocation();
+    };
+    handleUserInfo();
   }, []);
 
   return (
@@ -183,32 +199,37 @@ const DogStrlStatusChange = () => {
         >
           capture
         </Button>
-        <View>
-          <Text style={styles.inpLabels}>Select New Status</Text>
-          <Picker
-            selectedValue={newStatus}
-            onValueChange={(itemValue, itemIndex) => {
-              if (itemValue.length) {
-                setNewStatus(itemValue);
-              }
-            }}
-            mode="dialog"
-          >
-            <Picker.Item
-              label="Tap to see all Status"
-              value=""
-              style={{ fontSize: 18, textTransform: "uppercase" }}
-            />
-            {statusList.map((status, i) => (
+        {userInfo?.role.includes("ViewAdmin") && (
+          <View>
+            <Text style={styles.inpLabels}>Select New Status</Text>
+            <Picker
+              selectedValue={newStatus}
+              onValueChange={(itemValue, itemIndex) => {
+                if (itemValue.length) {
+                  setNewStatus(itemValue);
+                }
+              }}
+              mode="dialog"
+            >
               <Picker.Item
-                label={status.StatusName.toUpperCase()}
-                value={status.id}
-                key={i}
+                label="Tap to see all Status"
+                value=""
                 style={{ fontSize: 18, textTransform: "uppercase" }}
               />
-            ))}
-          </Picker>
-        </View>
+              {statusList
+                .filter((s) => s.StatusName !== currentCase.StatusName)
+                .map((status, i) => (
+                  <Picker.Item
+                    label={status.StatusName.toUpperCase()}
+                    value={status.id}
+                    key={i}
+                    style={{ fontSize: 18, textTransform: "uppercase" }}
+                  />
+                ))}
+            </Picker>
+          </View>
+        )}
+
         <TextInput
           label="Remarks (Optional)"
           placeholder="Enter any comments"
@@ -222,14 +243,16 @@ const DogStrlStatusChange = () => {
           mode="contained"
           style={{
             borderRadius: 5,
-            backgroundColor: bluePrHEX,
+            backgroundColor: userInfo?.role.includes("ViewAdmin")
+              ? bluePrHEX
+              : MD2Colors.green700,
           }}
           labelStyle={{ fontSize: 20 }}
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
         >
-          SUBMIT
+          {userInfo?.role.includes("ViewAdmin") ? "CHANGE STATUS" : "RELEASE"}
         </Button>
       </View>
       <Dialog
@@ -261,6 +284,41 @@ const DogStrlStatusChange = () => {
             }}
           >
             Back to View
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+      <Dialog
+        visible={distanceErrDiag}
+        onDismiss={() => {
+          setDistanceErrDiag(false);
+        }}
+        style={{ backgroundColor: "white" }}
+      >
+        <Dialog.Title
+          adjustsFontSizeToFit={true}
+          style={{ color: MD2Colors.red600 }}
+        >
+          Case is not released at right location
+        </Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ fontSize: 18, fontWeight: "400", marginTop: 10 }}>
+            {distanceErrMsg}
+          </Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button
+            mode="contained"
+            style={{
+              backgroundColor: MD2Colors.blue600,
+              borderRadius: 5,
+              paddingHorizontal: 10,
+            }}
+            labelStyle={{ fontSize: 16 }}
+            onPress={() => {
+              setDistanceErrDiag(false);
+            }}
+          >
+            Back
           </Button>
         </Dialog.Actions>
       </Dialog>

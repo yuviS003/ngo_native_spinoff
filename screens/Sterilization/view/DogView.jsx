@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React, { useCallback, useState } from "react";
 import { Button, List, MD2Colors, Searchbar } from "react-native-paper";
 import Loader from "../../../components/Loaders/Loader";
@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { searchDogStrlCases } from "../../../utils";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
 const API_BASE_URL = "https://covalenttechnology.co.in/test";
 
@@ -67,19 +68,23 @@ const DogView = ({ navigation }) => {
                         width: 50,
                         height: 50,
                         marginLeft: 10,
-                        backgroundColor: "black",
+                        borderColor: "black",
                         borderRadius: 25,
+                        borderWidth: 0.5,
                       }}
                     >
                       <Image
+                        source={`${API_BASE_URL}/image/${dCase.TrapImg}`}
+                        placeholder="Loading..."
+                        contentFit="cover"
+                        transition={200}
+                        alt="Image not loaded"
                         style={{
-                          objectFit: "scale-down",
                           width: 50,
+                          height: 50,
+                          borderRadius: 25,
+                          objectFit: "cover",
                         }}
-                        source={{
-                          uri: `${API_BASE_URL}/image/${dCase.TrapImg}`,
-                        }}
-                        alt="no-image"
                       />
                     </View>
                   )}
@@ -100,14 +105,11 @@ const DogView = ({ navigation }) => {
                       }}
                     >
                       <Image
-                        style={{
-                          objectFit: "scale-down",
-                          width: "auto",
-                        }}
-                        source={{
-                          uri: `${API_BASE_URL}/image/${dCase.TrapImg}`,
-                        }}
-                        alt="no-image"
+                        source={`${API_BASE_URL}/image/${dCase.TrapImg}`}
+                        placeholder="Loading..."
+                        contentFit="cover"
+                        transition={200}
+                        style={{ width: 200, height: 300, objectFit:"scale-down" }}
                       />
                     </View>
                     <Text

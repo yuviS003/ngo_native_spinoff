@@ -64,11 +64,29 @@ export const AppContextProvider = ({ children }) => {
         console.log("context then--> ", response.data[0]);
         dispatch({
           type: "UPDATE_DOG_STRL_CASES",
-          payload: sortArrayByUpdatedAt(response.data),
+          payload: sortArrayByUpdatedAt(
+            JSON.parse(userInfo)?.role.includes("ViewTrapper")
+              ? response.data.filter(
+                  (s) => s.username === JSON.parse(userInfo).userName
+                )
+              : response.data
+          ),
         });
       })
-      .catch((error) => {
-        console.error("context catch--> ", error.response);
+      .catch(async (error) => {
+        // console.error("context catch--> ", error.response);
+        if (
+          error?.response?.data?.code === 500 &&
+          error?.response?.data?.message === "jwt expired"
+        ) {
+          console.log("jwt expired");
+          const userInfo = JSON.parse(
+            await AsyncStorage.getItem("ngoUserInfo")
+          );
+          console.log(userInfo);
+          loginUser(userInfo.userName, userInfo.pw);
+          fetchDogStrlData();
+        }
       });
   };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Login from "./screens/Login";
 import Home from "./screens/Home";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,12 +10,26 @@ import DogStepper from "./screens/Sterilization/create/DogStepper";
 import DogView from "./screens/Sterilization/view/DogView";
 import DogStrlStatusChange from "./screens/Sterilization/modify_status/DogStrlStatusChange";
 import FlashMessage from "react-native-flash-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from "react-native";
+import { bluePrHEX } from "./constants";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userInfo = await AsyncStorage.getItem("ngoUserInfo");
+      if (userInfo) setUserInfo(JSON.parse(userInfo));
+    };
+    fetchUserInfo();
+  }, []);
+
   return (
     <AppContextProvider>
+      <StatusBar backgroundColor={bluePrHEX} networkActivityIndicatorVisible />
       <NavigationContainer>
         <Stack.Navigator
         // screenOptions={{
@@ -33,7 +47,7 @@ export default function App() {
             options={({ route }) => ({
               header: () => (
                 <AppBar
-                  appBarTitle="Welcome, Trapper 👋"
+                  appBarTitle={`Welcome, ${userInfo?.userName} 👋`}
                   showBackButton={false}
                 />
               ),

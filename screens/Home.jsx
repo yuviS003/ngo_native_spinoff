@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { SafeAreaView, Text, StyleSheet, View, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+  Image,
+} from "react-native";
 import { IconButton } from "react-native-paper";
 import PopUpModal from "../components/PopUpModal";
 import Swiper from "react-native-swiper";
@@ -34,6 +41,7 @@ const Home = ({ navigation }) => {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
+            width: "100%",
           }}
         >
           <View
@@ -51,15 +59,33 @@ const Home = ({ navigation }) => {
               autoplay
               loop
             >
-              <View style={styles.slide}>
-                <Text style={styles.text}>Image 1</Text>
-              </View>
-              <View style={styles.slide}>
-                <Text style={styles.text}>Image 2</Text>
-              </View>
-              <View style={styles.slide}>
-                <Text style={styles.text}>Image 3</Text>
-              </View>
+              <Image
+                source={require("../assets/slider_1.jpg")}
+                alt="Image not loaded"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+              <Image
+                source={require("../assets/slider_2.jpg")}
+                alt="Image not loaded"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+              <Image
+                source={require("../assets/slider_3.jpg")}
+                alt="Image not loaded"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
             </Swiper>
           </View>
           <View style={styles.boxContainer}>
